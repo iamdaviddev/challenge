@@ -2,7 +2,6 @@
 
 import { Button, Dialog, Text } from "@radix-ui/themes";
 import { Sidebar } from "./components/Sidebar";
-import { Card } from "./components/Card";
 
 import { 
   ChevronDown, 
@@ -10,12 +9,36 @@ import {
   Plus, 
   Dot 
 } from "lucide-react";
-import { useState } from "react";
+
+import { ChangeEvent, useState } from "react";
+
+interface TasksProps {
+  name: string;
+  date: string;
+  amount: number;
+}
 
 
 export default function Home() {
-  const [tasks, setTasks] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+  const [tasks, setTasks] = useState<TasksProps[]>([]);
+  const [newtask, setNewtask] = useState<TasksProps>({ name: '', date: '', amount: 0 });
+  
+  function handleNameChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewtask({...newtask, name: e.target.value});
+  }
+
+  function handleDateChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewtask({...newtask, date: e.target.value});
+  }
+
+  function handleAmountChange(e: ChangeEvent<HTMLInputElement>) {
+    setNewtask({...newtask, amount: parseInt(e.target.value)});
+  }
+
+  const addTask = () => {
+    setTasks([...tasks, newtask]);
+    setNewtask({ name: '', date: '', amount: 0 });
+  }
 
   return (
     <main className="flex flex-1 bg-[#141625]">
@@ -52,19 +75,35 @@ export default function Home() {
                   <input
                     placeholder="Enter your full name"
                     className="w-full p-2 outline-none rounded mt-1"
+                    value={newtask.name}
+                    onChange={handleNameChange}
                   />
                 </label>
                 <label>
                   <Text as="div" size="2" mb="1" weight="bold" className="text-white">
                     Data
                   </Text>
-                  <input type="date" name="" id="" className="w-full p-2 outline-none rounded mt-1"/>
+                  <input 
+                    type="date"
+                    name="" 
+                    id=""
+                    value={newtask.date} 
+                    className="w-full p-2 outline-none rounded mt-1"
+                    onChange={handleDateChange}
+                  />
                 </label>
                 <label className="mb-8">
                   <Text as="div" size="2" mb="1" weight="bold" className="text-white">
-                    Data
+                    Amount
                   </Text>
-                  <input type="number" name="" id="" className="w-full p-2 outline-none rounded mt-1"/>
+                  <input 
+                    type="number" 
+                    name="" 
+                    id=""
+                    value={newtask.amount} 
+                    className="w-full p-2 outline-none rounded mt-1"
+                    onChange={handleAmountChange}
+                  />
                 </label>
               </div>
               <div className="flex items-center justify-between gap-8">
@@ -76,6 +115,7 @@ export default function Home() {
                 <Dialog.Close>
                   <Button 
                     className="w-36 bg-slate-50 p-3 rounded-md outline-none"
+                    onClick={addTask}
                   >
                     Save
                   </Button>
@@ -87,15 +127,18 @@ export default function Home() {
          </div>
         </header>
         <div>
-          <div className="bg-[#1F213A] flex items-center justify-between p-8 rounded-lg">
-            <p className="text-white font-medium">#RT3080</p>
-            <span className="text-zinc-300 font-light">tuesday 19 Aug 2021</span>
-            <span className="text-zinc-300 font-light">Gerson Abreu</span>
-            <strong className="text-white">£1,880.90</strong>
-            <button className="bg-green-500 bg-opacity-35 p-2 w-28 text-green-400 rounded-md flex items-center justify-around"><Dot/>Paid</button>
-            <ChevronRight className="text-[#7C5DF9]"/>
-          </div> 
-          <Card/>
+          {
+            tasks.map((task, index) => (
+              <div key={index} className="bg-[#1F213A] flex items-center justify-between p-8 rounded-lg mb-8">
+                <p className="text-white font-medium">#RT3080</p>
+                <span className="text-zinc-300 font-light">{task.date}</span>
+                <span className="text-zinc-300 font-light">{task.name}</span>
+                <strong className="text-white">£{task.amount}</strong>
+                <button className="bg-green-500 bg-opacity-35 p-2 w-28 text-green-400 rounded-md flex items-center justify-around"><Dot/>Paid</button>
+                <ChevronRight className="text-[#7C5DF9]"/>
+              </div>
+            ))
+          } 
         </div>
       </div>
 
